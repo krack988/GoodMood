@@ -15,4 +15,6 @@
         android:pivotY="50%"
         android:duration="3000"/>
 
+    <!--android:sartOffset="1000"-->
+
 </set>
