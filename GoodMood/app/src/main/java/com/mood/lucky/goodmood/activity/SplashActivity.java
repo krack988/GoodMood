@@ -14,7 +14,7 @@ import com.mood.lucky.goodmood.activity.MainActivity;
 public class SplashActivity extends AppCompatActivity{
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         startActivity(new Intent(this, MainActivity.class));
         finish();
