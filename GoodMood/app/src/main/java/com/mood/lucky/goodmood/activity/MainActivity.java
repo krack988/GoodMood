@@ -11,11 +11,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mood.lucky.goodmood.App;
 import com.mood.lucky.goodmood.R;
+import com.mood.lucky.goodmood.model.BashModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
 
@@ -24,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private TextToSpeech textToSpeech;
     private List <Animation> animationList;
     private List <String> moodList;
+    private List <BashModel> randomBash;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +38,29 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         setContentView(R.layout.activity_main);
 
         textToSpeech = new TextToSpeech(this,this);
+        randomBash = new ArrayList<>();
 
         addAnimationList();
         addMoodList();
 
         textMood = (TextView) findViewById(R.id.textMood);
+        textMood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                App.getBashApi().getData("bash",1).enqueue(new Callback<List<BashModel>>() {
+                    @Override
+                    public void onResponse(Call<List<BashModel>> call, Response<List<BashModel>> response) {
+//                        randomBash.addAll(response.body());
+//                        Log.i("test_tag" , "response " + randomBash.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<BashModel>> call, Throwable t) {
+                        Log.i("test_tag" , "Network error");
+                    }
+                });
+            }
+        });
         btnMyMood = (Button) findViewById(R.id.btnChangeMood);
         btnMyMood.setOnClickListener(new View.OnClickListener() {
             @Override
