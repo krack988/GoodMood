@@ -3,7 +3,9 @@ package com.mood.lucky.goodmood.activity;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -31,11 +33,22 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private List <Animation> animationList;
     private List <String> moodList;
     private List <BashModel> randomBash;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu_toolbar);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this,"Share",Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
 
         textToSpeech = new TextToSpeech(this,this);
         randomBash = new ArrayList<>();

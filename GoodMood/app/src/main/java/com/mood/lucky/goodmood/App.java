@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.SystemClock;
 
 import com.mood.lucky.goodmood.net.BashApi;
+import com.vk.sdk.VKSdk;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +22,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+//        VKSdk.initialize(getApplicationContext());
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.umori.li/")
                 .addConverterFactory(GsonConverterFactory.create())
