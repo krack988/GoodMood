@@ -22,7 +22,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-//        VKSdk.initialize(getApplicationContext());
+        VKSdk.initialize(getApplicationContext());
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.umori.li/")
                 .addConverterFactory(GsonConverterFactory.create())

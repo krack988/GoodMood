@@ -1,6 +1,7 @@
 package com.mood.lucky.goodmood.activity;
 
 import android.speech.tts.TextToSpeech;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +17,8 @@ import android.widget.Toast;
 import com.mood.lucky.goodmood.App;
 import com.mood.lucky.goodmood.R;
 import com.mood.lucky.goodmood.model.BashModel;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.dialogs.VKShareDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.mood.lucky.goodmood.utils.Const.TEST_TAG;
+
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
 
     private Button btnMyMood;
@@ -32,13 +37,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private TextToSpeech textToSpeech;
     private List <Animation> animationList;
     private List <String> moodList;
+    private List <String> moodListTwo;
     private List <BashModel> randomBash;
     private Toolbar toolbar;
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fragmentManager = getSupportFragmentManager();
+
+        addAnimationList();
+        addMoodList();
+        addMoodListTwo();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_toolbar);
@@ -46,15 +58,31 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(MainActivity.this,"Share",Toast.LENGTH_SHORT).show();
+                VKShareDialogBuilder builder = new VKShareDialogBuilder();
+                builder.setText(textMood.getText().toString());
+                builder.setShareDialogListener(new VKShareDialogBuilder.VKShareDialogListener() {
+                    @Override
+                    public void onVkShareComplete(int postId) {
+
+                    }
+
+                    @Override
+                    public void onVkShareCancel() {
+
+                    }
+
+                    @Override
+                    public void onVkShareError(VKError error) {
+
+                    }
+                });
+                builder.show(fragmentManager,"VK_SHARE_DIALOG");
                 return true;
             }
         });
 
         textToSpeech = new TextToSpeech(this,this);
         randomBash = new ArrayList<>();
-
-        addAnimationList();
-        addMoodList();
 
         textMood = (TextView) findViewById(R.id.textMood);
         textMood.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                     @Override
                     public void onFailure(Call<List<BashModel>> call, Throwable t) {
-                        Log.i("test_tag" , "Network error");
+                        Log.i(TEST_TAG , "Network error");
                     }
                 });
             }
@@ -80,11 +108,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             public void onClick(View view) {
                 int randomAnim = (int) (Math.random()* animationList.size());
                 int randomMood = (int) (Math.random()* moodList.size());
+                int randomMoodTwo = (int) (Math.random()*moodListTwo.size());
 
-                textMood.setText(moodList.get(randomMood));
-//                textToSpeech.speak(textMood.getText().toString(),TextToSpeech.QUEUE_FLUSH,null);
+                textMood.setText(moodListTwo.get(randomMoodTwo) + " " + moodList.get(randomMood));
+//                textToSpeech.speak("Твое настроение " + textMood.getText().toString(),TextToSpeech.QUEUE_FLUSH,null);
                 textMood.startAnimation(animationList.get(randomAnim));
-                Log.i("ttt" , "random: " + randomAnim);
+                Log.i(TEST_TAG , "random: " + randomAnim);
             }
         });
     }
@@ -112,6 +141,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         moodList.add("Дерьмово");
         moodList.add("Скорбно");
         moodList.add("Серо");
+    }
+
+    public void addMoodListTwo(){
+        moodListTwo = new ArrayList<>();
+        moodListTwo.add("Очень");
+        moodListTwo.add("Сильно");
+        moodListTwo.add("Ужасно");
+        moodListTwo.add("Колосально");
+        moodListTwo.add("Крайне");
+        moodListTwo.add("Заметно");
+        moodListTwo.add("Невероятно");
+        moodListTwo.add("Немного");
+        moodListTwo.add("Страшно");
+
     }
 
     @Override
