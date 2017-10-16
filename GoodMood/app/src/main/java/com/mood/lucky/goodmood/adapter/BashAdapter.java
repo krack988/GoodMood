@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import com.mood.lucky.goodmood.R;
 import com.mood.lucky.goodmood.model.BashModel;
@@ -44,9 +45,13 @@ public class BashAdapter extends BaseAdapter{
         }
         BashModel model = getModel(i);
 
+        ((TextView) v.findViewById(R.id.bush_item_post)).setText(model.getDesc());
+        ((TextView) v.findViewById(R.id.bush_site)).setText(model.getSite());
+
         return v;
     }
     public BashModel getModel(int position){
         return ((BashModel) getItem(position));
     }
+
 }

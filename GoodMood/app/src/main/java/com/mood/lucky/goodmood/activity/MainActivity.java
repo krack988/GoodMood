@@ -1,21 +1,29 @@
 package com.mood.lucky.goodmood.activity;
 
+import android.content.Intent;
 import android.speech.tts.TextToSpeech;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mood.lucky.goodmood.App;
 import com.mood.lucky.goodmood.R;
+import com.mood.lucky.goodmood.dialog.DialogFragmentSharing;
+import com.mood.lucky.goodmood.dialog.DialogSharingActivity;
 import com.mood.lucky.goodmood.model.BashModel;
 import com.vk.sdk.api.VKError;
 import com.vk.sdk.dialogs.VKShareDialogBuilder;
@@ -41,12 +49,23 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private List <BashModel> randomBash;
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
+    private LayoutInflater inflater;
+    private View dialogSharing;
+    private ImageButton btnSharingVK;
+    private ImageButton btnSharingFB;
+    private DialogFragment dialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
+
+        inflater = getLayoutInflater();
+        dialogSharing = inflater.inflate(R.layout.dialog_sharing_change,(LinearLayout) findViewById(R.id.sharingLayout));
+        btnSharingFB = (ImageButton) findViewById(R.id.btnFBSharing);
+        btnSharingVK = (ImageButton) findViewById(R.id.btnVKSharing);
+        dialogFragment = new DialogFragmentSharing();
 
         addAnimationList();
         addMoodList();
@@ -58,25 +77,28 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(MainActivity.this,"Share",Toast.LENGTH_SHORT).show();
-                VKShareDialogBuilder builder = new VKShareDialogBuilder();
-                builder.setText(textMood.getText().toString());
-                builder.setShareDialogListener(new VKShareDialogBuilder.VKShareDialogListener() {
-                    @Override
-                    public void onVkShareComplete(int postId) {
+                dialogFragment.show(getSupportFragmentManager(),"dialogSharing");
 
-                    }
+//                VKShareDialogBuilder builder = new VKShareDialogBuilder();
+//                builder.setText(textMood.getText().toString());
+//                builder.setShareDialogListener(new VKShareDialogBuilder.VKShareDialogListener() {
+//                    @Override
+//                    public void onVkShareComplete(int postId) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onVkShareCancel() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onVkShareError(VKError error) {
+//
+//                    }
+//                });
+//                builder.show(fragmentManager,"VK_SHARE_DIALOG");
 
-                    @Override
-                    public void onVkShareCancel() {
-
-                    }
-
-                    @Override
-                    public void onVkShareError(VKError error) {
-
-                    }
-                });
-                builder.show(fragmentManager,"VK_SHARE_DIALOG");
                 return true;
             }
         });

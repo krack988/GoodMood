@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">GoodMood</string>
-    <integer name="com_vk_sdk_AppId">6204542 </integer>
+    <integer name="com_vk_sdk_AppId">6204542</integer>
 </resources>
