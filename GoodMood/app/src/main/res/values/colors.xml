@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#546e7a </color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorSharingDialog">#60000000</color>
+    <color name="colorSharingDialogBackground">#14000000</color>
 </resources>

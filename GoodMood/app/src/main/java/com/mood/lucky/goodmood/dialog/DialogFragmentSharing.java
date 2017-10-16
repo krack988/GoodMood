@@ -20,6 +20,12 @@ public class DialogFragmentSharing extends DialogFragment {
     private ImageButton btnSharingVK;
     private ImageButton btnSharingFB;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.MyDialog);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
