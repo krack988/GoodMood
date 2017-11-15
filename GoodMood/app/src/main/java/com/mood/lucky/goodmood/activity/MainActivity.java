@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.vision.face.FaceDetector;
 import com.mood.lucky.goodmood.App;
 import com.mood.lucky.goodmood.R;
 import com.mood.lucky.goodmood.dialog.DialogFragmentSharing;
@@ -27,11 +28,9 @@ import com.mood.lucky.goodmood.dialog.DialogSharingActivity;
 import com.mood.lucky.goodmood.model.BashModel;
 import com.vk.sdk.api.VKError;
 import com.vk.sdk.dialogs.VKShareDialogBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -138,6 +137,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 Log.i(TEST_TAG , "random: " + randomAnim);
             }
         });
+
+
+        //detect smile
+        FaceDetector detector = new FaceDetector.Builder(getApplicationContext())
+                .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
+                .setProminentFaceOnly(true)
+                .setTrackingEnabled(true)
+                .build();
     }
 
     public void addAnimationList(){
