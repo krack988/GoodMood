@@ -74,7 +74,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(MainActivity.this,"Share",Toast.LENGTH_SHORT).show();
-                dialogFragment.show(getSupportFragmentManager(),"dialogSharing");
+//                dialogFragment.show(getSupportFragmentManager(),"dialogSharing");
+
+
+                startActivity(new Intent(MainActivity.this,TestActivity.class));
 
 //                VKShareDialogBuilder builder = new VKShareDialogBuilder();
 //                builder.setText(textMood.getText().toString());
