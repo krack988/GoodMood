@@ -220,4 +220,26 @@ public class TestActivity extends AppCompatActivity {
             mCameraSource.release();
         }
     }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean("IsFrontFacing", mIsFrontFacing);
+    }
+
+    /**
+     * Toggles between front-facing and rear-facing modes.
+     */
+    private View.OnClickListener mFlipButtonListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            mIsFrontFacing = !mIsFrontFacing;
+
+            if (mCameraSource != null) {
+                mCameraSource.release();
+                mCameraSource = null;
+            }
+
+            createCameraSource();
+            startCameraSource();
+        }
+    };
 }
