@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private GraphicOverlay mGraphicOverlay;
     private double moodLevel;
     private Tracker<Face> tracker;
+    private float leftEye;
+    private float rightEye;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,26 +119,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                 startActivity(new Intent(MainActivity.this,TestActivity.class));
 
-//                VKShareDialogBuilder builder = new VKShareDialogBuilder();
-//                builder.setText(textMood.getText().toString());
-//                builder.setShareDialogListener(new VKShareDialogBuilder.VKShareDialogListener() {
-//                    @Override
-//                    public void onVkShareComplete(int postId) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onVkShareCancel() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onVkShareError(VKError error) {
-//
-//                    }
-//                });
-//                builder.show(fragmentManager,"VK_SHARE_DIALOG");
-
                 return true;
             }
         });
@@ -154,20 +136,28 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         btnMyMood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
+
                 if (tracker != null) {
                     moodLevel = ((SmileTracker)tracker).getMoodLevel();
+                    leftEye = ((SmileTracker) tracker).getLeftEye();
+                    rightEye = ((SmileTracker) tracker).getRightEye();
                     Log.i(TEST_TAG, "moodLevel: " + moodLevel);
                 }
 
                 if (moodLevel <= 0){
                     textToSpeech.speak("Я не вижу твоё лицо!", TextToSpeech.QUEUE_FLUSH, null);
-                }else {
-                    if (moodLevel > 0.4) {
+                }else
+                    if (moodLevel > 0.2 & moodLevel < 0.4){
+                        textToSpeech.speak("Похоже, ты сел на кактус.", TextToSpeech.QUEUE_FLUSH, null);
+                    }else
+                    if (moodLevel >= 0.4) {
                         textToSpeech.speak("Ты улыбаешься как жопа!", TextToSpeech.QUEUE_FLUSH, null);
-                    } else {
+                    } else
                         textToSpeech.speak("Ты похож на унылое говно!", TextToSpeech.QUEUE_FLUSH, null);
-                    }
-                }
+
+
                 int randomAnim = (int) (Math.random()* animationList.size());
                 int randomMood = (int) (Math.random()* moodList.size());
                 int randomMoodTwo = (int) (Math.random()*moodListTwo.size());

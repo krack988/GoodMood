@@ -32,6 +32,8 @@ public class SmileTracker extends Tracker<Face> {
     private boolean mPreviousIsRightOpen = true;
 
     private double moodLevel;
+    private float leftEye;
+    private float rightEye;
 
     public SmileTracker(){}
     public SmileTracker(GraphicOverlay overlay){
@@ -50,7 +52,11 @@ public class SmileTracker extends Tracker<Face> {
         updatePreviousProportions(face);
 
                 moodLevel = face.getIsSmilingProbability();
-                Log.i(TEST_TAG, "moodlevel from tracker: " + moodLevel);
+                leftEye = face.getIsLeftEyeOpenProbability();
+                rightEye = face.getIsRightEyeOpenProbability();
+//                Log.i(TEST_TAG, "moodlevel from tracker: " + moodLevel);
+//                Log.i(TEST_TAG, "left eye: " + leftEye);
+                Log.i(TEST_TAG, "right eye: " + rightEye);
 
                 if (face.getIsSmilingProbability() > 0.4) {
 //            Log.i(TEST_TAG, "you are smile");
@@ -139,5 +145,13 @@ public class SmileTracker extends Tracker<Face> {
 
     public synchronized double getMoodLevel(){
         return moodLevel;
+    }
+
+    public synchronized float getLeftEye(){
+        return leftEye;
+    }
+
+    public synchronized float getRightEye(){
+        return rightEye;
     }
 }
