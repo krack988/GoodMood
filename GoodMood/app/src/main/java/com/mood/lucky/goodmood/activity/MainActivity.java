@@ -1,7 +1,6 @@
 package com.mood.lucky.goodmood.activity;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -11,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -36,23 +34,16 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
-import com.mood.lucky.goodmood.App;
 import com.mood.lucky.goodmood.R;
 import com.mood.lucky.goodmood.activity.cameraui.CameraSourcePreview;
 import com.mood.lucky.goodmood.activity.cameraui.GraphicOverlay;
 import com.mood.lucky.goodmood.core.SmileTracker;
 import com.mood.lucky.goodmood.dialog.DialogFragmentSharing;
-import com.mood.lucky.goodmood.dialog.DialogSharingActivity;
-import com.vk.sdk.api.VKError;
-import com.vk.sdk.dialogs.VKShareDialogBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static com.mood.lucky.goodmood.utils.Const.TEST_TAG;
 
@@ -62,8 +53,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private TextView textMood;
     private TextToSpeech textToSpeech;
     private List <Animation> animationList;
-    private List <String> moodList;
-    private List <String> moodListTwo;
+    private List <String> moodListDescriptionSad;
+    private List <String> moodListPower;
+    private List <String> moodListDescriptionGood;
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
     private LayoutInflater inflater;
@@ -105,8 +97,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         dialogFragment = new DialogFragmentSharing();
 
         addAnimationList();
-        addMoodList();
-        addMoodListTwo();
+        addMoodListDescriptionSad();
+        addMoodListDescritionGood();
+        addMoodListPower();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_toolbar);
@@ -137,7 +130,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             public void onClick(View view) {
 
+                int randomAnim = (int) (Math.random()* animationList.size());
+                int randomMoodDescriptionSad = (int) (Math.random()* moodListDescriptionSad.size());
+                int randomMoodDescriptionGood = (int) (Math.random() * moodListDescriptionGood.size());
+                int randomMoodPower = (int) (Math.random()* moodListPower.size());
 
+//                textMood.setText(moodListPower.get(randomMoodPower) + " " + moodListDescriptionSad.get(randomMoodDescriptionSad));
+//                textToSpeech.speak("Твое настроение " + textMood.getText().toString(),TextToSpeech.QUEUE_FLUSH,null);
+                textMood.startAnimation(animationList.get(randomAnim));
 
                 if (tracker != null) {
                     moodLevel = ((SmileTracker)tracker).getMoodLevel();
@@ -153,18 +153,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         textToSpeech.speak("Похоже, ты сел на кактус.", TextToSpeech.QUEUE_FLUSH, null);
                     }else
                     if (moodLevel >= 0.4) {
-                        textToSpeech.speak("Ты улыбаешься как жопа!", TextToSpeech.QUEUE_FLUSH, null);
-                    } else
-                        textToSpeech.speak("Ты похож на унылое говно!", TextToSpeech.QUEUE_FLUSH, null);
-
-
-                int randomAnim = (int) (Math.random()* animationList.size());
-                int randomMood = (int) (Math.random()* moodList.size());
-                int randomMoodTwo = (int) (Math.random()*moodListTwo.size());
-
-                textMood.setText(moodListTwo.get(randomMoodTwo) + " " + moodList.get(randomMood));
-//                textToSpeech.speak("Твое настроение " + textMood.getText().toString(),TextToSpeech.QUEUE_FLUSH,null);
-                textMood.startAnimation(animationList.get(randomAnim));
+                        textMood.setText(moodListPower.get(randomMoodPower) + " " + moodListDescriptionGood.get(randomMoodDescriptionGood));
+//                        textToSpeech.speak("Ты улыбаешься как жопа!", TextToSpeech.QUEUE_FLUSH, null);
+                    } else{
+//                        textToSpeech.speak("Ты похож на унылое говно!", TextToSpeech.QUEUE_FLUSH, null);
+                        textMood.setText(moodListPower.get(randomMoodPower) + " " + moodListDescriptionSad.get(randomMoodDescriptionSad));
+                    }
+                textToSpeech.speak("Твое настроение " + textMood.getText().toString(),TextToSpeech.QUEUE_FLUSH,null);
 
             }
         });
@@ -187,33 +182,44 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         animationList.add(AnimationUtils.loadAnimation(MainActivity.this,R.anim.mytrans));
     }
 
-    public void addMoodList(){
-        moodList = new ArrayList<>();
-        moodList.add("Хреново");
-        moodList.add("Ужасно");
-        moodList.add("Погано");
-        moodList.add("Грустно");
-        moodList.add("Отстойно");
-        moodList.add("Херово");
-        moodList.add("Плохо");
-        moodList.add("Не хорошо");
-        moodList.add("Плохонько");
-        moodList.add("Дерьмово");
-        moodList.add("Скорбно");
-        moodList.add("Серо");
+    public void addMoodListDescriptionSad(){
+        moodListDescriptionSad = new ArrayList<>();
+        moodListDescriptionSad.add("Хреново");
+        moodListDescriptionSad.add("Ужасно");
+        moodListDescriptionSad.add("Погано");
+        moodListDescriptionSad.add("Грустно");
+        moodListDescriptionSad.add("Отстойно");
+        moodListDescriptionSad.add("Херово");
+        moodListDescriptionSad.add("Плохо");
+        moodListDescriptionSad.add("Не хорошо");
+        moodListDescriptionSad.add("Плохонько");
+        moodListDescriptionSad.add("Дерьмово");
+        moodListDescriptionSad.add("Скорбно");
+        moodListDescriptionSad.add("Серо");
     }
 
-    public void addMoodListTwo(){
-        moodListTwo = new ArrayList<>();
-        moodListTwo.add("Очень");
-        moodListTwo.add("Сильно");
-        moodListTwo.add("Ужасно");
-        moodListTwo.add("Колосально");
-        moodListTwo.add("Крайне");
-        moodListTwo.add("Заметно");
-        moodListTwo.add("Невероятно");
-        moodListTwo.add("Немного");
-        moodListTwo.add("Страшно");
+    public void addMoodListPower(){
+        moodListPower = new ArrayList<>();
+        moodListPower.add("Очень");
+        moodListPower.add("Сильно");
+        moodListPower.add("Ужасно");
+        moodListPower.add("Колосально");
+        moodListPower.add("Крайне");
+        moodListPower.add("Заметно");
+        moodListPower.add("Невероятно");
+        moodListPower.add("Немного");
+        moodListPower.add("Страшно");
+
+    }
+
+    public void addMoodListDescritionGood(){
+        moodListDescriptionGood = new ArrayList<>();
+        moodListDescriptionGood.add("Замечательно");
+        moodListDescriptionGood.add("Отлично");
+        moodListDescriptionGood.add("Классно");
+        moodListDescriptionGood.add("Превосходно");
+        moodListDescriptionGood.add("Улыбчиво");
+        moodListDescriptionGood.add("Распрекрасно");
 
     }
 

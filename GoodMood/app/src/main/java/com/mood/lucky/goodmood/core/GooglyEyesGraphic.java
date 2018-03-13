@@ -38,7 +38,7 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
         super(overlay);
 
         mEyeWhitesPaint = new Paint();
-        mEyeWhitesPaint.setColor(Color.WHITE);
+        mEyeWhitesPaint.setColor(Color.GREEN);
         mEyeWhitesPaint.setStyle(Paint.Style.FILL);
 
         mEyeLidPaint = new Paint();

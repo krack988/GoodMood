@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.PointF;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +26,7 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.face.Landmark;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
 import com.mood.lucky.goodmood.R;
 import com.mood.lucky.goodmood.activity.cameraui.CameraSourcePreview;
@@ -31,20 +34,31 @@ import com.mood.lucky.goodmood.activity.cameraui.GraphicOverlay;
 import com.mood.lucky.goodmood.core.SmileTracker;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-public class TestActivity extends AppCompatActivity {
+import static com.mood.lucky.goodmood.utils.Const.TEST_TAG;
+
+public class TestActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
 
     private static final String TAG = "GooglyEyes";
-
     private static final int RC_HANDLE_GMS = 9001;
-
     private static final int RC_HANDLE_CAMERA_PERM = 2;
-
     private CameraSource mCameraSource = null;
     private CameraSourcePreview mPreview;
     private GraphicOverlay mGraphicOverlay;
-
     private boolean mIsFrontFacing = true;
+    private Button moodBtn;
+    private List<String> moodListDescriptionSad;
+    private List <String> moodListPower;
+    private List <String> moodListDescriptionGood;
+    private TextToSpeech textToSpeech;
+    private Tracker<Face> tracker;
+    private double moodLevel;
+    private Map<Integer, PointF> mPreviousProportions = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +67,13 @@ public class TestActivity extends AppCompatActivity {
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
+        moodBtn = (Button) findViewById(R.id.moodBtn);
+
+        addMoodListDescriptionSad();
+        addMoodListDescritionGood();
+        addMoodListPower();
+
+        textToSpeech = new TextToSpeech(this,this);
 
         final Button button = (Button) findViewById(R.id.flipButton);
         button.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +91,41 @@ public class TestActivity extends AppCompatActivity {
             }
         });
 
+        moodBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int randomMoodDescriptionSad = (int) (Math.random()* moodListDescriptionSad.size());
+                int randomMoodDescriptionGood = (int) (Math.random() * moodListDescriptionGood.size());
+                int randomMoodPower = (int) (Math.random()* moodListPower.size());
+
+                if (tracker != null) {
+                    moodLevel = ((SmileTracker)tracker).getMoodLevel();
+//                    leftEye = ((SmileTracker) tracker).getLeftEye();
+//                    rightEye = ((SmileTracker) tracker).getRightEye();
+                    Log.i(TEST_TAG, "moodLevel: " + moodLevel);
+                }
+
+                if (moodLevel <= 0){
+                    textToSpeech.speak("Я не вижу твоё лицо!", TextToSpeech.QUEUE_FLUSH, null);
+                }else
+                if (moodLevel > 0.2 & moodLevel < 0.4){
+                    textToSpeech.speak("Похоже, ты сел на кактус.", TextToSpeech.QUEUE_FLUSH, null);
+                }else
+                if (moodLevel >= 0.4) {
+//                        textToSpeech.speak("Ты улыбаешься как жопа!", TextToSpeech.QUEUE_FLUSH, null);
+                    textToSpeech.speak("Твое настроение " + moodListPower.get(randomMoodPower) + " " + moodListDescriptionGood.get(randomMoodDescriptionGood), TextToSpeech.QUEUE_FLUSH, null);
+                } else{
+//                        textToSpeech.speak("Ты похож на унылое говно!", TextToSpeech.QUEUE_FLUSH, null);
+                    textToSpeech.speak("Твое настроение " + moodListPower.get(randomMoodPower) + " " + moodListDescriptionSad.get(randomMoodDescriptionSad), TextToSpeech.QUEUE_FLUSH, null);
+                }
+
+
+
+
+            }
+        });
+
         if (savedInstanceState != null) {
             mIsFrontFacing = savedInstanceState.getBoolean("IsFrontFacing");
         }
@@ -80,6 +136,47 @@ public class TestActivity extends AppCompatActivity {
         } else {
             requestCameraPermission();
         }
+    }
+
+    public void addMoodListDescriptionSad(){
+        moodListDescriptionSad = new ArrayList<>();
+        moodListDescriptionSad.add("Хреново");
+        moodListDescriptionSad.add("Ужасно");
+        moodListDescriptionSad.add("Погано");
+        moodListDescriptionSad.add("Грустно");
+        moodListDescriptionSad.add("Отстойно");
+        moodListDescriptionSad.add("Херово");
+        moodListDescriptionSad.add("Плохо");
+        moodListDescriptionSad.add("Не хорошо");
+        moodListDescriptionSad.add("Плохонько");
+        moodListDescriptionSad.add("Дерьмово");
+        moodListDescriptionSad.add("Скорбно");
+        moodListDescriptionSad.add("Серо");
+    }
+
+    public void addMoodListPower(){
+        moodListPower = new ArrayList<>();
+        moodListPower.add("Очень");
+        moodListPower.add("Сильно");
+        moodListPower.add("Ужасно");
+        moodListPower.add("Колосально");
+        moodListPower.add("Крайне");
+        moodListPower.add("Заметно");
+        moodListPower.add("Невероятно");
+        moodListPower.add("Немного");
+        moodListPower.add("Страшно");
+
+    }
+
+    public void addMoodListDescritionGood(){
+        moodListDescriptionGood = new ArrayList<>();
+        moodListDescriptionGood.add("Замечательно");
+        moodListDescriptionGood.add("Отлично");
+        moodListDescriptionGood.add("Классно");
+        moodListDescriptionGood.add("Превосходно");
+        moodListDescriptionGood.add("Улыбчиво");
+        moodListDescriptionGood.add("Распрекрасно");
+
     }
 
     private void createCameraSource() {
@@ -162,7 +259,7 @@ public class TestActivity extends AppCompatActivity {
         Detector.Processor<Face> processor;
         if (mIsFrontFacing) {
 
-            Tracker<Face> tracker = new SmileTracker(mGraphicOverlay);
+            tracker = new SmileTracker(mGraphicOverlay);
             processor = new LargestFaceFocusingProcessor.Builder(detector, tracker).build();
         } else {
 
@@ -242,4 +339,27 @@ public class TestActivity extends AppCompatActivity {
             startCameraSource();
         }
     };
+
+    @Override
+    public void onInit(int i) {
+        if (i == TextToSpeech.SUCCESS){
+            Locale locale = new Locale("ru");
+            int result = textToSpeech.setLanguage(locale);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
+                Log.i("ttt" , "not supported");
+                Toast.makeText(TestActivity.this,"Language not supported", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            Log.i("ttt","Error");
+        }
+    }
+
+    private void updatePreviousProportions(Face face) {
+        for (Landmark landmark : face.getLandmarks()) {
+            PointF position = landmark.getPosition();
+            float xProp = (position.x - face.getPosition().x) / face.getWidth();
+            float yProp = (position.y - face.getPosition().y) / face.getHeight();
+            mPreviousProportions.put(landmark.getType(), new PointF(xProp, yProp));
+        }
+    }
 }
