@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
@@ -28,6 +30,7 @@ import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.Landmark;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
+import com.mood.lucky.goodmood.App;
 import com.mood.lucky.goodmood.R;
 import com.mood.lucky.goodmood.activity.cameraui.CameraSourcePreview;
 import com.mood.lucky.goodmood.activity.cameraui.GraphicOverlay;
@@ -55,15 +58,25 @@ public class TestActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private List<String> moodListDescriptionSad;
     private List <String> moodListPower;
     private List <String> moodListDescriptionGood;
+    private List <Bitmap> goodBitmap;
+    private List <Bitmap> sadBitmap;
     private TextToSpeech textToSpeech;
     private Tracker<Face> tracker;
     private double moodLevel;
+    private Bitmap myBitmap;
+    private Bitmap yraFace;
     private Map<Integer, PointF> mPreviousProportions = new HashMap<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+
+        myBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        yraFace  =BitmapFactory.decodeResource(getResources(), R.drawable.ic_forever_alone);
+        App.getInstance().setBitmap(yraFace);
+        if (myBitmap != null) Log.i("tag" , "bitmap not null");
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
@@ -177,6 +190,12 @@ public class TestActivity extends AppCompatActivity implements TextToSpeech.OnIn
         moodListDescriptionGood.add("Улыбчиво");
         moodListDescriptionGood.add("Распрекрасно");
 
+    }
+
+    public void addGoodBitmap(){
+        goodBitmap = new ArrayList<>();
+        goodBitmap.add(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+        goodBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_forever_alone));
     }
 
     private void createCameraSource() {
@@ -354,12 +373,6 @@ public class TestActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
     }
 
-    private void updatePreviousProportions(Face face) {
-        for (Landmark landmark : face.getLandmarks()) {
-            PointF position = landmark.getPosition();
-            float xProp = (position.x - face.getPosition().x) / face.getWidth();
-            float yProp = (position.y - face.getPosition().y) / face.getHeight();
-            mPreviousProportions.put(landmark.getType(), new PointF(xProp, yProp));
-        }
-    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.mood.lucky.goodmood.core;
 
+import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.util.Log;
 import android.widget.Toast;
@@ -9,6 +10,7 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.Landmark;
+import com.mood.lucky.goodmood.activity.TestActivity;
 import com.mood.lucky.goodmood.activity.cameraui.GraphicOverlay;
 
 import java.util.HashMap;
@@ -48,6 +50,8 @@ public class SmileTracker extends Tracker<Face> {
     @Override
     public void onUpdate(Detector.Detections<Face> detections, Face face) {
         super.onUpdate(detections, face);
+        //show eyes on activity
+        mOverlay.add(mEyesGraphic);
 
         updatePreviousProportions(face);
 

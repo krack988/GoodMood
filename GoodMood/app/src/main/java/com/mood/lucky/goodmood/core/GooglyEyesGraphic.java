@@ -1,11 +1,20 @@
 package com.mood.lucky.goodmood.core;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.util.Log;
 
+import com.mood.lucky.goodmood.App;
+import com.mood.lucky.goodmood.R;
+import com.mood.lucky.goodmood.activity.MainActivity;
+import com.mood.lucky.goodmood.activity.TestActivity;
 import com.mood.lucky.goodmood.activity.cameraui.GraphicOverlay;
+
+import java.util.Arrays;
 
 /**
  * Created by lucky on 05.12.2017.
@@ -19,6 +28,7 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
     private Paint mEyeIrisPaint;
     private Paint mEyeOutlinePaint;
     private Paint mEyeLidPaint;
+    private Paint facePaint;
 
     // Keep independent physics state for each eye.
     private EyePhysics mLeftPhysics = new EyePhysics();
@@ -30,6 +40,8 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
     private volatile PointF mRightPosition;
     private volatile boolean mRightOpen;
 
+    private Bitmap myBitmap;
+
     //==============================================================================================
     // Methods
     //==============================================================================================
@@ -38,7 +50,7 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
         super(overlay);
 
         mEyeWhitesPaint = new Paint();
-        mEyeWhitesPaint.setColor(Color.GREEN);
+        mEyeWhitesPaint.setColor(Color.TRANSPARENT);
         mEyeWhitesPaint.setStyle(Paint.Style.FILL);
 
         mEyeLidPaint = new Paint();
@@ -53,6 +65,10 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
         mEyeOutlinePaint.setColor(Color.BLACK);
         mEyeOutlinePaint.setStyle(Paint.Style.STROKE);
         mEyeOutlinePaint.setStrokeWidth(5);
+
+        facePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+//        facePaint.setStyle(Paint.Style.STROKE);
+
     }
 
     /**
@@ -77,6 +93,7 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
      */
     @Override
     public void draw(Canvas canvas) {
+
         PointF detectLeftPosition = mLeftPosition;
         PointF detectRightPosition = mRightPosition;
         if ((detectLeftPosition == null) || (detectRightPosition == null)) {
@@ -94,16 +111,20 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
                         Math.pow(rightPosition.y - leftPosition.y, 2));
         float eyeRadius = EYE_RADIUS_PROPORTION * distance;
         float irisRadius = IRIS_RADIUS_PROPORTION * distance;
+        //center x,y
+        float centerDefX = (rightPosition.x + leftPosition.x)/2;
+        float centerDefY = leftPosition.y + 30;
 
         // Advance the current left iris position, and draw left eye.
         PointF leftIrisPosition =
                 mLeftPhysics.nextIrisPosition(leftPosition, eyeRadius, irisRadius);
-        drawEye(canvas, leftPosition, eyeRadius, leftIrisPosition, irisRadius, mLeftOpen);
+//        drawEye(canvas, leftPosition, eyeRadius, leftIrisPosition, irisRadius, mLeftOpen);
+        drawCenter(canvas, centerDefX, centerDefY, eyeRadius, mLeftOpen);
 
         // Advance the current right iris position, and draw right eye.
         PointF rightIrisPosition =
                 mRightPhysics.nextIrisPosition(rightPosition, eyeRadius, irisRadius);
-        drawEye(canvas, rightPosition, eyeRadius, rightIrisPosition, irisRadius, mRightOpen);
+//        drawEye(canvas, rightPosition, eyeRadius, rightIrisPosition, irisRadius, mRightOpen);
     }
 
     /**
@@ -123,4 +144,23 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
         }
         canvas.drawCircle(eyePosition.x, eyePosition.y, eyeRadius, mEyeOutlinePaint);
     }
+    private void drawCenter(Canvas canvas, float defx, float defy, float radius, boolean isOpen){
+        myBitmap = App.getInstance().getBitmap();
+        int[] colors = new int[300*300];
+        Arrays.fill(colors, 300*100, 300*200, Color.GREEN);
+        Arrays.fill(colors, 300*100, 300*200, Color.BLUE);
+        Arrays.fill(colors, 300*200, 300*300, Color.GREEN);
+
+        int bitmapWidth = (int)radius *6;
+        int bitmapHeight = (int)radius *6;
+
+        Bitmap bitmap = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.RGB_565);
+        Bitmap reBitmap = Bitmap.createScaledBitmap(bitmap,bitmapWidth , bitmapHeight,false);
+        Bitmap reMyBitmap = Bitmap.createScaledBitmap(myBitmap,bitmapWidth,bitmapHeight,false);
+
+//            canvas.drawCircle(defx, defy, radius, mEyeWhitesPaint);
+            canvas.drawBitmap(reMyBitmap,defx - bitmapWidth/2 ,defy - bitmapHeight/2 ,facePaint);
+//        canvas.drawCircle(defx, defy, radius, mEyeOutlinePaint);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.mood.lucky.goodmood;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 import android.os.SystemClock;
 import com.vk.sdk.VKSdk;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +14,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class App extends Application {
     private Retrofit retrofit;
+    private Bitmap bitmap;
+    private static App instance;
 
     @Override
     public void onCreate() {
@@ -24,6 +27,20 @@ public class App extends Application {
                 .build();
 
         SystemClock.sleep(TimeUnit.MILLISECONDS.toMillis(700));
+
+        instance = this;
+    }
+
+    public static App getInstance (){
+        return instance;
+    }
+
+    public Bitmap getBitmap(){
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap){
+        this.bitmap = bitmap;
     }
 
 }

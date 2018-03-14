@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -34,6 +36,7 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
+import com.mood.lucky.goodmood.App;
 import com.mood.lucky.goodmood.R;
 import com.mood.lucky.goodmood.activity.cameraui.CameraSourcePreview;
 import com.mood.lucky.goodmood.activity.cameraui.GraphicOverlay;
@@ -71,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private Tracker<Face> tracker;
     private float leftEye;
     private float rightEye;
+    private Bitmap myBitmap;
+    private Bitmap yraFace;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 //camera
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
+
+        myBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        yraFace  =BitmapFactory.decodeResource(getResources(), R.drawable.ic_forever_alone);
+        App.getInstance().setBitmap(yraFace);
 
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
