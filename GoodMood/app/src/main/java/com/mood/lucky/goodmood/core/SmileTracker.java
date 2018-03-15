@@ -60,7 +60,7 @@ public class SmileTracker extends Tracker<Face> {
                 rightEye = face.getIsRightEyeOpenProbability();
 //                Log.i(TEST_TAG, "moodlevel from tracker: " + moodLevel);
 //                Log.i(TEST_TAG, "left eye: " + leftEye);
-                Log.i(TEST_TAG, "right eye: " + rightEye);
+//                Log.i(TEST_TAG, "right eye: " + rightEye);
 
                 if (face.getIsSmilingProbability() > 0.4) {
 //            Log.i(TEST_TAG, "you are smile");

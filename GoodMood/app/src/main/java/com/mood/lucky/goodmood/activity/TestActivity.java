@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -63,9 +64,10 @@ public class TestActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private TextToSpeech textToSpeech;
     private Tracker<Face> tracker;
     private double moodLevel;
+    private double moodLavelFace;
     private Bitmap myBitmap;
     private Bitmap yraFace;
-    private Map<Integer, PointF> mPreviousProportions = new HashMap<>();
+    private Handler faceHandler;
 
 
     @Override
@@ -73,10 +75,9 @@ public class TestActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
-        myBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        yraFace  =BitmapFactory.decodeResource(getResources(), R.drawable.ic_forever_alone);
-        App.getInstance().setBitmap(yraFace);
-        if (myBitmap != null) Log.i("tag" , "bitmap not null");
+//        myBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+//        yraFace  =BitmapFactory.decodeResource(getResources(), R.drawable.ic_forever_alone);
+//        App.getInstance().setBitmap(yraFace);
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
@@ -85,6 +86,8 @@ public class TestActivity extends AppCompatActivity implements TextToSpeech.OnIn
         addMoodListDescriptionSad();
         addMoodListDescritionGood();
         addMoodListPower();
+        addGoodBitmap();
+        addSabBitmap();
 
         textToSpeech = new TextToSpeech(this,this);
 
@@ -101,22 +104,23 @@ public class TestActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                 createCameraSource();
                 startCameraSource();
+
             }
         });
 
         moodBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                moodLevel = ((SmileTracker)tracker).getMoodLevel();
                 int randomMoodDescriptionSad = (int) (Math.random()* moodListDescriptionSad.size());
                 int randomMoodDescriptionGood = (int) (Math.random() * moodListDescriptionGood.size());
                 int randomMoodPower = (int) (Math.random()* moodListPower.size());
 
                 if (tracker != null) {
-                    moodLevel = ((SmileTracker)tracker).getMoodLevel();
+//                    moodLevel = ((SmileTracker)tracker).getMoodLevel();
 //                    leftEye = ((SmileTracker) tracker).getLeftEye();
 //                    rightEye = ((SmileTracker) tracker).getRightEye();
-                    Log.i(TEST_TAG, "moodLevel: " + moodLevel);
+//                    Log.i(TEST_TAG, "moodLevel: " + moodLevel);
                 }
 
                 if (moodLevel <= 0){
@@ -133,11 +137,28 @@ public class TestActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     textToSpeech.speak("Твое настроение " + moodListPower.get(randomMoodPower) + " " + moodListDescriptionSad.get(randomMoodDescriptionSad), TextToSpeech.QUEUE_FLUSH, null);
                 }
 
-
-
-
             }
         });
+
+        Runnable faceAction = new Runnable() {
+            @Override
+            public void run() {
+                int randomGoodBitmap = (int) (Math.random() * goodBitmap.size());
+                int randomSadBitmap = (int) (Math.random() * sadBitmap.size());
+                moodLavelFace = ((SmileTracker)tracker).getMoodLevel();
+                faceHandler.postDelayed(this, 1000);
+                Log.i("tag" , "mood from runnable: " + moodLavelFace);
+                if (moodLavelFace < 0.4){
+                    App.getInstance().setBitmap(sadBitmap.get(randomSadBitmap));
+                }else{
+                    App.getInstance().setBitmap(goodBitmap.get(randomGoodBitmap));
+                }
+
+            }
+        };
+        faceHandler = new Handler();
+        faceHandler.postDelayed(faceAction,1000);
+
 
         if (savedInstanceState != null) {
             mIsFrontFacing = savedInstanceState.getBoolean("IsFrontFacing");
@@ -194,8 +215,21 @@ public class TestActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     public void addGoodBitmap(){
         goodBitmap = new ArrayList<>();
-        goodBitmap.add(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
-        goodBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_forever_alone));
+        goodBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_good_cat));
+        goodBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_good_doge));
+        goodBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_good_panda));
+        goodBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_good_pepe));
+
+    }
+
+    public void addSabBitmap(){
+        sadBitmap = new ArrayList<>();
+        sadBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sad_arnold));
+        sadBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sad_cat));
+        sadBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sad_g_cat));
+//        sadBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sad_gcat));
+//        sadBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sad_micke));
+//        sadBitmap.add(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sad_pepe));
     }
 
     private void createCameraSource() {

@@ -152,7 +152,7 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
         Arrays.fill(colors, 300*200, 300*300, Color.GREEN);
 
         int bitmapWidth = (int)radius *6;
-        int bitmapHeight = (int)radius *6;
+        int bitmapHeight = (int)radius *7;
 
         Bitmap bitmap = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.RGB_565);
         Bitmap reBitmap = Bitmap.createScaledBitmap(bitmap,bitmapWidth , bitmapHeight,false);
